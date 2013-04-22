@@ -168,7 +168,6 @@ public class b2Island
 		var j:int;
 		var b:b2Body;
 		var joint:b2Joint;
-		var appliedGravity:b2Vec2;
 		
 		// Integrate velocities and apply damping.
 		for (i = 0; i < m_bodyCount; ++i)
@@ -180,16 +179,8 @@ public class b2Island
 			
 			// Integrate velocities.
 			//b.m_linearVelocity += step.dt * (gravity + b.m_invMass * b.m_force);
-			
-			if(b.GetUserData()!=null && b.GetUserData().name=="enemy"){
-				appliedGravity = new b2Vec2(0,0)
-			}
-			else{
-				appliedGravity = gravity;
-			}
-			
-			b.m_linearVelocity.x += step.dt * (appliedGravity.x + b.m_invMass * b.m_force.x);
-			b.m_linearVelocity.y += step.dt * (appliedGravity.y + b.m_invMass * b.m_force.y);
+			b.m_linearVelocity.x += step.dt * (gravity.x + b.m_invMass * b.m_force.x);
+			b.m_linearVelocity.y += step.dt * (gravity.y + b.m_invMass * b.m_force.y);
 			b.m_angularVelocity += step.dt * b.m_invI * b.m_torque;
 			
 			// Apply damping.
