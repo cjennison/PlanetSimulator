@@ -10,6 +10,8 @@ package com.jennison
 	public class Planet extends MovieClip 
 	{
 		
+		public var mass:Number;
+		
 		public function Planet() 
 		{
 			addEventListener(Event.ENTER_FRAME, rotatePlanet);

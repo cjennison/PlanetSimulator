@@ -19,7 +19,9 @@
 	import fl.transitions.easing.*;
 	import fl.transitions.TweenEvent;
 	import flash.events.TimerEvent;
+	import flash.text.TextField;
 	import flash.utils.Timer;
+	import com.jennison.SimulatorInterface;
 	
 	public class Main extends Sprite {
 		private var world:b2World=new b2World(new b2Vec2(0,0),true);
@@ -37,13 +39,20 @@
 		var pullLine:Shape;
 		
 		private var mouseTxt:mouseText = new mouseText();
-		
+		private var field:Field = new Field();
 		//Planets
 		private var sun:Sun = new Sun();
 		private var planet:Planet;
 		
 		//Intro
 		private var intro:Introduction = new Introduction();
+		
+		//UI
+		private var simInterface:SimulatorInterface = new SimulatorInterface();
+		
+		private var numPlanets:Number = 0;
+		
+		private var timeScale:Number = 1 / 30;
 		
 		public function Main() {
 			
@@ -64,10 +73,36 @@
 			debugDraw();
 			addSun(stage.stageWidth/2,stage.stageHeight/2 + 10,40);
 			//addPlanet(480,120,45);
+			addChild(field);
 			addEventListener(Event.ENTER_FRAME,update);
-			stage.addEventListener(MouseEvent.MOUSE_UP, createDebris);
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, startPull);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, pull);
+			field.addEventListener(MouseEvent.MOUSE_UP, createDebris);
+			field.addEventListener(MouseEvent.MOUSE_DOWN, startPull);
+			field.addEventListener(MouseEvent.MOUSE_MOVE, pull);
+			
+			addChild(simInterface);
+			
+			
+			simInterface.pausebtn.addEventListener(MouseEvent.CLICK, pause);
+			simInterface.playbtn.addEventListener(MouseEvent.CLICK, unpause);
+			
+			simInterface.playbtn.alpha = .5;
+		}
+		
+		private function unpause(e:MouseEvent):void 
+		{
+			timeScale = 1 / 40;
+			simInterface.IncRate = .0048;
+			
+			simInterface.pausebtn.alpha = 1;
+			simInterface.playbtn.alpha = .5;
+		}
+		
+		private function pause(e:MouseEvent):void 
+		{
+			timeScale = 0;
+			simInterface.IncRate = 0;
+			simInterface.pausebtn.alpha = .5;
+			simInterface.playbtn.alpha = 1;
 		}
 
 		
@@ -78,6 +113,7 @@
 			velY = (firstMouseY -  mouseY)/10;
 			mouseTxt.x = mouseX;
 			mouseTxt.y = mouseY;
+			mouseTxt.mouseEnabled = false;
 			mouseTxt.velText.text = "Entry Velocity: " + velX + " km/s, " + velY + " km/s";;
 			
 			pullLine.graphics.clear();
@@ -138,6 +174,12 @@
 			planet = new Planet();
 			addChild(planet);
 			
+			//var data:Object = simInterface.getPlanetData();
+			trace(simInterface.getPlanetData().name);
+			
+			r = simInterface.getPlanetData().volume/10;
+			planet.mass = simInterface.getPlanetData().mass;
+			
 			var fixtureDef:b2FixtureDef = new b2FixtureDef();
 			fixtureDef.restitution=0;
 			fixtureDef.density=1;
@@ -156,6 +198,8 @@
 			planet.x = pX;
 			planet.y = pY;
 			
+			numPlanets++;
+			
 		}
 		private function debugDraw():void {
 			var debugDraw:b2DebugDraw = new b2DebugDraw();
@@ -168,7 +212,7 @@
 			world.SetDebugDraw(debugDraw);
 		}
 		private function update(e:Event):void {
-			world.Step(1/40, 10, 10);
+			world.Step(timeScale, 10, 10);
 			world.ClearForces();
 			
 			for (var i:int = 0; i < debrisVector.length; i++) {
@@ -177,16 +221,18 @@
 				for (var j:int = 0; j < planetVector.length; j++) {
 					//trace(planetVector[i].GetUserData());
 					var planetShape:b2CircleShape=planetVector[j].GetFixtureList().GetShape() as b2CircleShape;
-					var planetRadius:Number=planetShape.GetRadius();
+					var planetRadius:Number = planetShape.GetRadius();
+					var planetMass:Number = debrisVector[j].GetUserData().asset.mass;
 					var planetPosition:b2Vec2=planetVector[j].GetWorldCenter();
 					var planetDistance:b2Vec2=new b2Vec2(0,0);
 					planetDistance.Add(debrisPosition);
 					planetDistance.Subtract(planetPosition);
+					
 					var finalDistance:Number=planetDistance.Length();
 					if (finalDistance<=planetRadius*10) {
 						planetDistance.NegativeSelf();
 						var vecSum:Number=Math.abs(planetDistance.x)+Math.abs(planetDistance.y);
-						planetDistance.Multiply((1/vecSum)*planetRadius/finalDistance * 10);
+						planetDistance.Multiply((1/vecSum)*planetRadius/finalDistance * 20);
 						debrisVector[i].ApplyForce(planetDistance,debrisVector[i].GetWorldCenter());
 					}
 				}
@@ -207,9 +253,14 @@
 
 				world.DestroyBody(Globals.bodiesToRemove[k]);
 				Globals.bodiesToRemove.splice(k, 1);
+				numPlanets--;
 			}
 			
 			world.DrawDebugData();
+			
+			if (simInterface.yearsNum > 120) {
+				
+			}
 		}
 		
 		public function attachIgnite() {
