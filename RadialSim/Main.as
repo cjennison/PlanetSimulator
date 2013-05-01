@@ -66,6 +66,9 @@
 		
 		public function initWorld(e:MouseEvent = null) {
 			Globals.sun_name = intro.sunName.text;
+			trace(Globals.sun_name);
+			Globals.sun_type = intro.sun_picker.value;
+			trace(Globals.sun_type);
 			removeChild(intro);
 			world.SetContactListener(new customContact());
 			addChild(orbitCanvas);
@@ -146,6 +149,10 @@
 			
 			sun = new Sun();
 			addChild(sun);
+			
+			if (Globals.sun_type == "blue_giant") {
+				sun.gotoAndStop(2);
+			}
 			var sunTween:Tween = new Tween(sun, "alpha", Strong.easeOut, 0, 1, 5, true);
 			
 			var fixtureDef:b2FixtureDef = new b2FixtureDef();
@@ -179,6 +186,10 @@
 			
 			r = simInterface.getPlanetData().volume/10;
 			planet.mass = simInterface.getPlanetData().mass;
+			
+			if (simInterface.getPlanetData().type == "jovian") {
+				planet.gotoAndStop(2);
+			}
 			
 			var fixtureDef:b2FixtureDef = new b2FixtureDef();
 			fixtureDef.restitution=0;
