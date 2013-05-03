@@ -11,6 +11,7 @@ package com.jennison
 	{
 		
 		public var mass:Number;
+		public var volume:Number;
 		
 		public function Planet() 
 		{
@@ -20,6 +21,7 @@ package com.jennison
 		private function rotatePlanet(e:Event):void 
 		{
 			this.rotation += .1;
+			this.ring.rotation += .1;
 		}
 		
 	}

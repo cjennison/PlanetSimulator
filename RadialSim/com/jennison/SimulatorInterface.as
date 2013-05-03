@@ -32,7 +32,7 @@ package com.jennison
 		
 		private function increaseYears(e:Event):void 
 		{
-			trace(IncRate);
+			//trace(IncRate);
 			yearsNum += IncRate;
 			
 			years.text = Math.round(yearsNum) + " years";
@@ -73,7 +73,7 @@ package com.jennison
 		}
 		
 		public function getPlanetData() {
-			var data:Object = {volume:Number, mass:Number, name:String, type:String};
+			var data:Object = {volume:Number, mass:Number, name:String, type:String, hasRings:Boolean};
 			data.volume = planetFlyup.volume.text;
 			if (planetFlyup.volume.text == "") {
 				data.volume = Math.random() * 100;
@@ -85,6 +85,12 @@ package com.jennison
 			data.name = planetFlyup.planet_name.text;
 			if (planetFlyup.volume.text == "") {
 				data.name = "XR" + Math.ceil(Math.random() * 2000);
+			}
+			
+			if (planetFlyup.ring_selector.value == "rings") {
+				data.hasRings = true;
+			} else {
+				data.hasRings = false;
 			}
 			
 			data.type = planetFlyup.planet_type.value;

@@ -15,6 +15,8 @@ package com.jennison
 			this.addEventListener(MouseEvent.MOUSE_OVER, showInformation);
 			this.addEventListener(MouseEvent.MOUSE_MOVE, update);
 			this.addEventListener(MouseEvent.MOUSE_OUT, removeTool);
+			
+			
 		}
 		
 		private function update(e:MouseEvent):void 
@@ -33,7 +35,9 @@ package com.jennison
 		
 		private function showInformation(e:MouseEvent):void 
 		{
+			trace("SHOWING");
 			tooltip = new ToolTip();
+			tooltip.mouseEnabled = false;
 			addChild(tooltip);
 			tooltip.planetName.text = Globals.sun_name;
 			tooltip.x = mouseX;
