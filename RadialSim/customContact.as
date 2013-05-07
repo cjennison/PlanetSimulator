@@ -3,6 +3,7 @@ package  {
   import Box2D.Collision.*;
   import Box2D.Dynamics.Contacts.*;
   import com.jennison.Sun;
+  import com.jennison.Planet;
   import flash.utils.getDefinitionByName;
   import flash.utils.*;
   import com.jennison.Globals;
@@ -28,6 +29,14 @@ package  {
 	  if (getClass(bodyB.GetUserData().asset) == Sun) {
 			Globals.bodiesToRemove.push(bodyA);
 	  }
+	  
+	  
+	   if (getClass(bodyB.GetUserData().asset) == Planet && getClass(bodyA.GetUserData().asset) == Planet) {
+			Globals.bodiesToCompare.push(bodyA);
+			Globals.bodiesToCompare.push(bodyB);
+
+	  }
+	  
 	  
 	}
     override public function EndContact(contact:b2Contact):void{
